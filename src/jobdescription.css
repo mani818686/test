@@ -1,0 +1,20 @@
+
+.job-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 0 5%;
+    flex-direction: column;
+    background: linear-gradient(135deg, #1abc9c, #3498db); 
+}
+
+.job-container h3,.job-container h5{
+    color:white;
+    font-weight: bold;
+}
+.responsibilties, .skills{
+    align-self: self-start;
+}

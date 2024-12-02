@@ -1,0 +1,24 @@
+
+.list-items{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+li.item{
+    border: 1px solid black;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+    width: 700px;
+    .item-part1{
+        padding-left: 10px;
+       padding-top: 8px;
+       align-content: center !important;
+    }
+    .item-part2{
+        margin: 10px;
+        align-self: center;
+    }
+}
