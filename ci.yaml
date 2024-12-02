@@ -1,0 +1,42 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+env:
+  IMAGE_TAG: latest
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: test/job-portal
+  ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  REPOSITORY_URI: ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        repository: 
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+      # Login to Amazon ECR
+    - name: Log in to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build Docker Image
+        run: |
+          docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+
+      # Push Docker Image to ECR
+    - name: Push Docker Image to ECR
+      run: |
+        docker push $REPOSITORY_URI:$IMAGE_TAG

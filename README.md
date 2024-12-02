@@ -1,1 +1,1 @@
-# This is sample Static Jobs Portal
+# This is Static Jobs Portal
