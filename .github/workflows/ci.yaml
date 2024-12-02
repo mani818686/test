@@ -12,10 +12,8 @@ env:
   IMAGE_TAG: latest
   AWS_REGION: us-east-1
   ECR_REPOSITORY: test/job-portal
-  ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  REPOSITORY_URI: ${{ env.ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}
 
-jobs:
+jobs: 
   build:
     runs-on: ubuntu-latest
 
@@ -30,6 +28,10 @@ jobs:
     - name: Log in to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
+
+     # Step 3: Set up environment variables
+    - name: Define Repository URI
+      run: echo "REPOSITORY_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}" >> $GITHUB_ENV
 
     - name: Build Docker Image
       run: |
