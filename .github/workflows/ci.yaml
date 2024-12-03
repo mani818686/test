@@ -93,7 +93,6 @@ jobs:
         aws ecs update-service \
         --cluster ${{ env.ECS_CLUSTER }} \
         --service ${{ env.ECS_SERVICE }} \
-        --task-definition $TASK_DEFINITION_ARN \
         --region $AWS_REGION \
         --desired-count 1 \
         --force-new-deployment
