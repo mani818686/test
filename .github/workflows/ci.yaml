@@ -15,6 +15,7 @@ env:
   ECS_TASK_DEFINITION: JP-td
   ECS_SERVICE: Jp-service
   ECS_CLUSTER: JP-Cluster
+  CONTAINER_NAME: frontend
 jobs: 
   build:
     runs-on: ubuntu-latest
