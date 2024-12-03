@@ -64,6 +64,8 @@ jobs:
             \"image\": \"$REPOSITORY_URI:${{ github.sha }}\",
             \"memory\": 512,
             \"cpu\": 256,
+             --network-mode "awsvpc" \
+            --requires-compatibilities "FARGATE" \
             \"essential\": true,
             \"portMappings\": [
               {
