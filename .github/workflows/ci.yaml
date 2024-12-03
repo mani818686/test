@@ -61,6 +61,8 @@ jobs:
           --family "${{ env.ECS_TASK_DEFINITION }}" \
           --network-mode "awsvpc" \
           --requires-compatibilities "FARGATE" \
+           --cpu "256" \
+          --memory "512" \
           --container-definitions "[{
             \"name\": \"${{ env.CONTAINER_NAME }}\",
             \"image\": \"$REPOSITORY_URI:${{ github.sha }}\",
