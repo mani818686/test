@@ -81,7 +81,7 @@ jobs:
       # Get the latest task definition ARN
     - name: Get Latest Task Definition ARN
       run: |
-        TASK_DEFINITION_ARN=$(aws ecs describe-task-definitions \
+        TASK_DEFINITION_ARN=$(aws ecs describe-task-definition \
           --family-prefix "${{ env.ECS_TASK_DEFINITION }}" \
           --sort DESC \
           --max-items 1 \
