@@ -12,7 +12,9 @@ env:
   IMAGE_TAG: latest
   AWS_REGION: us-east-1
   ECR_REPOSITORY: test/job-portal
-
+  ECS_TASK_DEFINITION: JP-td
+  ECS_SERVICE: Jp-service
+  ECS_CLUSTER: JP-Cluster
 jobs: 
   build:
     runs-on: ubuntu-latest
@@ -43,9 +45,25 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+        docker build -t $REPOSITORY_URI:${{github.sha}} .
 
       # Push Docker Image to ECR
     - name: Push Docker Image to ECR
       run: |
-        docker push $REPOSITORY_URI:$IMAGE_TAG
+        docker push $REPOSITORY_URI:${{github.sha}}
+      
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${REPOSITORY_URI}:${{github.sha}}
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true
