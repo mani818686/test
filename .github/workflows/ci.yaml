@@ -59,13 +59,13 @@ jobs:
       run: |
         TASK_DEF=$(aws ecs register-task-definition \
           --family "${{ env.ECS_TASK_DEFINITION }}" \
+          --network-mode "awsvpc" \
+          --requires-compatibilities "FARGATE" \
           --container-definitions "[{
             \"name\": \"${{ env.CONTAINER_NAME }}\",
             \"image\": \"$REPOSITORY_URI:${{ github.sha }}\",
             \"memory\": 512,
             \"cpu\": 256,
-             --network-mode "awsvpc" \
-            --requires-compatibilities "FARGATE" \
             \"essential\": true,
             \"portMappings\": [
               {
