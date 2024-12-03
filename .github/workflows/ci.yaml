@@ -55,9 +55,10 @@ jobs:
       
     # Register ECS Task Definition without using a JSON file
     - name: Register ECS Task Definition
+      id: register-task-def
       run: |
-        aws ecs register-task-definition \
-          --family "${{env.ECS_TASK_DEFINITION}}" \
+        TASK_DEF=$(aws ecs register-task-definition \
+          --family "${{ env.ECS_TASK_DEFINITION }}" \
           --container-definitions "[{
             \"name\": \"${{ env.CONTAINER_NAME }}\",
             \"image\": \"$REPOSITORY_URI:${{ github.sha }}\",
@@ -72,12 +73,27 @@ jobs:
               }
             ]
           }]" \
-          --region $AWS_REGION
-
-    - name: Deploy Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+          --region $AWS_REGION)
+          
+        # Extract task definition revision (family:revision)
+        echo "::set-output name=task-definition::$(echo $TASK_DEF | jq -r '.taskDefinition.family + ":" + (.taskDefinition.revision | tostring)')"
+    
+      # Get the latest task definition ARN
+    - name: Get Latest Task Definition ARN
+      run: |
+        TASK_DEFINITION_ARN=$(aws ecs describe-task-definitions \
+          --family-prefix "${{ env.ECS_TASK_DEFINITION }}" \
+          --sort DESC \
+          --max-items 1 \
+          --query "taskDefinitionArns[0]" \
+          --output text)
+        echo "TASK_DEFINITION_ARN=$TASK_DEFINITION_ARN" >> $GITHUB_ENV
+    - name: Update ECS Service
+      run: |
+        aws ecs update-service \
+        --cluster ${{ env.ECS_CLUSTER }} \
+        --service ${{ env.ECS_SERVICE }} \
+        --task-definition $TASK_DEFINITION_ARN \
+        --region $AWS_REGION \
+        --desired-count 1 \
+        --force-new-deployment
