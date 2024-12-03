@@ -83,7 +83,7 @@ jobs:
           --query "taskDefinition.revision" \
           --output "text"
         )
-        echo "TASK_REVISION=$TASK_REVISION" >> $GITHUB_ENV"
+        echo "TASK_REVISION=$TASK_REVISION" >> $GITHUB_ENV
 
     - name: Update ECS Service
       run: |
