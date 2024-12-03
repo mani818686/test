@@ -75,22 +75,22 @@ jobs:
           }]" \
           --region $AWS_REGION)
           
-      # Get the latest task definition ARN
-    - name: Get Latest Task Definition ARN
+    # Get the latest task definition revision
+    - name: Get Latest Task Definition Revision
       run: |
-        TASK_REVISON = $(aws ecs describe-task-definition \
+        TASK_REVISION=$(aws ecs describe-task-definition \
           --task-definition "${{ env.ECS_TASK_DEFINITION }}" \
           --query "taskDefinition.revision" \
           --output "text"
-          )
-        echo "TASK_REVISION=$TASK_REVISON" >> $GITHUB_ENV
+        )
+        echo "TASK_REVISION=$TASK_REVISION" >> $GITHUB_ENV"
 
     - name: Update ECS Service
       run: |
         aws ecs update-service \
         --cluster ${{ env.ECS_CLUSTER }} \
         --service ${{ env.ECS_SERVICE }} \
-        --task-definition $TASK_REVISON
+        --task-definition $TASK_REVISION
         --region $AWS_REGION \
         --desired-count 1 \
         --force-new-deployment
