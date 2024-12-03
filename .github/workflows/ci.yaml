@@ -16,6 +16,7 @@ env:
   ECS_SERVICE: Jp-service
   ECS_CLUSTER: JP-Cluster
   CONTAINER_NAME: frontend
+  ECS_EXECUTION_ARN: arn:aws:iam::730335178682:role/ecsTaskExecutionRole
 jobs: 
   build:
     runs-on: ubuntu-latest
@@ -41,8 +42,10 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
 
      # Step 3: Set up environment variables
-    - name: Define Repository URI
-      run: echo "REPOSITORY_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}" >> $GITHUB_ENV
+    - name: Define Repository URI and Execution ARN
+      run: |
+        echo "REPOSITORY_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}" >> $GITHUB_ENV
+        echo "ECS_EXECUTION_ARN=arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/ecsTaskExecutionRole" >> $GITHUB_ENV
 
     - name: Build Docker Image
       run: |
@@ -63,6 +66,7 @@ jobs:
           --requires-compatibilities "FARGATE" \
            --cpu "256" \
           --memory "512" \
+          --execution-role-arn $ECS_EXECUTION_ARN \
           --container-definitions "[{
             \"name\": \"${{ env.CONTAINER_NAME }}\",
             \"image\": \"$REPOSITORY_URI:${{ github.sha }}\",
