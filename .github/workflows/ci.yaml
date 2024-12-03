@@ -53,13 +53,26 @@ jobs:
       run: |
         docker push $REPOSITORY_URI:${{github.sha}}
       
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-        task-definition: ${{ env.ECS_TASK_DEFINITION }}
-        container-name: ${{ env.CONTAINER_NAME }}
-        image: ${REPOSITORY_URI}:${{github.sha}}
+    # Register ECS Task Definition without using a JSON file
+    - name: Register ECS Task Definition
+      run: |
+        aws ecs register-task-definition \
+          --family "${{env.ECS_TASK_DEFINITION}}" \
+          --container-definitions "[{
+            \"name\": \"${{ env.CONTAINER_NAME }}\",
+            \"image\": \"$REPOSITORY_URI:${{ github.sha }}\",
+            \"memory\": 512,
+            \"cpu\": 256,
+            \"essential\": true,
+            \"portMappings\": [
+              {
+                \"containerPort\": 3000,
+                \"hostPort\": 3000,
+                \"protocol\": \"tcp\"
+              }
+            ]
+          }]" \
+          --region $AWS_REGION
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
