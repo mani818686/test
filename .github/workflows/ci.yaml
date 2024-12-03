@@ -85,8 +85,8 @@ jobs:
           --family-prefix "${{ env.ECS_TASK_DEFINITION }}" \
           --sort DESC \
           --max-items 1 \
-          --query "taskDefinitionArns[0]" \
-          --output text)
+          --query "taskDefinitionArns[0]" 
+          )
         echo "TASK_DEFINITION_ARN=$TASK_DEFINITION_ARN" >> $GITHUB_ENV
     - name: Update ECS Service
       run: |
