@@ -37,7 +37,7 @@ A simple static website with login and register pages, along with job listing an
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/mani818686/test.git
-   cd your-repo-name
+   cd test
 2. **Build and Run Docker Container Locally:**:
    ```bash
    docker build -t job-portal .
